@@ -44,6 +44,8 @@ type TranspilerContextConfig struct {
 }
 
 func InitTranspiler(contextConfig *TranspilerContextConfig) {
+	logrus.Infoln("Initializing transpiler...")
+
 	err := env.LoadEnv()
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to load environment variables")
@@ -102,6 +104,8 @@ func InitTranspiler(contextConfig *TranspilerContextConfig) {
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to add queue message handler")
 	}
+
+	logrus.Infoln("Transpiler successfully initialized!")
 
 	// wait for signal to exit
 	sigChan := make(chan os.Signal, 1)
