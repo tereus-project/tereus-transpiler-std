@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 
+	"github.com/sirupsen/logrus"
 	"github.com/tereus-project/tereus-go-std/s3"
 	"github.com/tereus-project/tereus-transpiler-std/env"
 )
@@ -28,59 +31,69 @@ func NewStorageService() (*StorageService, error) {
 }
 
 type DownloadedObject struct {
-	ObjectPath string
-	LocalPath  string
+	SourceFilePath string
+	LocalPath      string
 }
 
-func (s *StorageService) DownloadObjects(submissionId string) ([]*DownloadedObject, error) {
+func (s *StorageService) DownloadSourceObjects(submissionId string) ([]*DownloadedObject, error) {
 	var files []*DownloadedObject
 
-	for object := range s.s3Service.GetObjects(submissionId) {
-		localPath, err := s.downloadObject(submissionId, object.Path)
+	config := env.GetEnv()
+
+	tempDirectory, err := os.MkdirTemp("", fmt.Sprintf("%s-", submissionId))
+	if err != nil {
+		return nil, fmt.Errorf("Failed to create temp dir: %s", err)
+	}
+
+	prefix := fmt.Sprintf("%s/%s/", config.SubmissionFolderPrefix, submissionId)
+
+	for object := range s.s3Service.GetObjects(prefix) {
+		localPath, err := s.downloadSourceObject(object.Path, tempDirectory)
 		if err != nil {
 			return nil, err
 		}
 
 		files = append(files, &DownloadedObject{
-			ObjectPath: object.Path,
-			LocalPath:  localPath,
+			SourceFilePath: strings.TrimPrefix(object.Path, prefix),
+			LocalPath:      localPath,
 		})
 	}
 
 	return files, nil
 }
 
-func (s *StorageService) downloadObject(submissionId string, filename string) (string, error) {
-	config := env.GetEnv()
-	objectPath := fmt.Sprintf("%s/%s/%s", config.SubmissionFolderPrefix, submissionId, filename)
-
+func (s *StorageService) downloadSourceObject(objectPath string, directory string) (string, error) {
 	object, err := s.s3Service.GetObject(objectPath)
 	if err != nil {
 		return "", err
 	}
 	defer object.Close()
 
-	dir, err := os.MkdirTemp("", fmt.Sprintf("%s-", submissionId))
+	localPath := fmt.Sprintf("%s/%s", directory, objectPath)
+	logrus.Debugf("Downloading file '%s' to '%s'", objectPath, localPath)
+	err = os.MkdirAll(filepath.Dir(localPath), 0755)
 	if err != nil {
-		return "", fmt.Errorf("Failed to create temp dir: %s", err)
+		return "", err
 	}
 
-	f, err := os.Create(fmt.Sprintf("%s/%s", dir, filename))
+	f, err := os.Create(localPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to create file: %s", err)
 	}
 
 	_, err = io.Copy(f, object)
 	if err != nil {
-		return "", fmt.Errorf("failed to copy object to '%s': %s", f.Name(), err)
+		return "", fmt.Errorf("failed to copy object to '%s': %s", localPath, err)
 	}
 
-	return f.Name(), nil
+	return localPath, nil
 }
 
-func (s *StorageService) UploadObject(submissionId string, filename string, content []byte) error {
+func (s *StorageService) UploadTranspiledObject(submissionId string, filename string, content []byte) error {
 	config := env.GetEnv()
 	objectPath := fmt.Sprintf("%s-results/%s/%s", config.SubmissionFolderPrefix, submissionId, filename)
+
+	logrus.Debugf("Uploading file '%s' to '%s'", filename, objectPath)
 
 	_, err := s.s3Service.PutObject(objectPath, bytes.NewReader(content), int64(len(content)))
 	return err

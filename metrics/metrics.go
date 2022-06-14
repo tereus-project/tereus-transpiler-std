@@ -9,7 +9,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tereus-project/tereus-transpiler-std/env"
-	"github.com/tereus-project/tereus-transpiler-std/submission"
+	"github.com/tereus-project/tereus-transpiler-std/messages"
 )
 
 type MetricsService struct {
@@ -56,6 +56,6 @@ func (m *MetricsService) Close() error {
 	return m.server.Shutdown(ctx)
 }
 
-func (m *MetricsService) ObserveTranspilingDuration(status submission.SubmissionStatus, startTime time.Time) {
+func (m *MetricsService) ObserveTranspilingDuration(status messages.SubmissionStatus, startTime time.Time) {
 	m.transpilingDurationHistogram.WithLabelValues(string(status)).Observe(time.Since(startTime).Seconds())
 }

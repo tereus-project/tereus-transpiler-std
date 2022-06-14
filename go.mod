@@ -9,7 +9,8 @@ require (
 	github.com/onrik/logrus v0.9.0
 	github.com/prometheus/client_golang v1.12.2
 	github.com/sirupsen/logrus v1.8.1
-	github.com/tereus-project/tereus-go-std v0.0.0-20220614164210-393a2d9308e2
+	github.com/tereus-project/tereus-go-std v0.0.0-20220614202837-a7fd72970220
+
 )
 
 require (

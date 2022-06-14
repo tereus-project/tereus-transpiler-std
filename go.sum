@@ -234,8 +234,8 @@ github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXf
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJyk=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
-github.com/tereus-project/tereus-go-std v0.0.0-20220614164210-393a2d9308e2 h1:hhaL/fqvRUaU1wu4VoKopGpOI3Tx8TqyuFsuCUjdik0=
-github.com/tereus-project/tereus-go-std v0.0.0-20220614164210-393a2d9308e2/go.mod h1:4W9VxA6Y/mrlvgG7/u7hJ4OBVgYffR6+YQn+0TrFxEw=
+github.com/tereus-project/tereus-go-std v0.0.0-20220614202837-a7fd72970220 h1:MKQbAejuKUqIIjQavQrmEyMMY7nkSHnkGXOfRMd5PU4=
+github.com/tereus-project/tereus-go-std v0.0.0-20220614202837-a7fd72970220/go.mod h1:4W9VxA6Y/mrlvgG7/u7hJ4OBVgYffR6+YQn+0TrFxEw=
 github.com/tidwall/gjson v1.14.1 h1:iymTbGkQBhveq21bEvAQ81I0LEBork8BFe1CUZXdyuo=
 github.com/tidwall/match v1.1.1 h1:+Ho715JplO36QYgwN9PGYNhgZvoUSc9X2c80KVTi+GA=
 github.com/tidwall/match v1.1.1/go.mod h1:eRSPERbgtNPcGhD8UCthc6PmLEQXEWd3PRB5JTxsfmM=
