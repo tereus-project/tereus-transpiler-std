@@ -35,12 +35,12 @@ type TranspilerContext struct {
 type TranspileFunction func(localPath string) (string, error)
 
 type TranspilerContextConfig struct {
-	sourceLanguage              string
-	sourceLanguageFileExtension string
-	targetLanguage              string
-	targetLanguageFileExtension string
+	SourceLanguage              string
+	SourceLanguageFileExtension string
+	TargetLanguage              string
+	TargetLanguageFileExtension string
 
-	transpileFunction TranspileFunction
+	TranspileFunction TranspileFunction
 }
 
 func InitTranspiler(contextConfig *TranspilerContextConfig) {
@@ -50,7 +50,7 @@ func InitTranspiler(contextConfig *TranspilerContextConfig) {
 	}
 
 	if len(os.Args) >= 2 {
-		executeHeadless(os.Args[1], contextConfig.transpileFunction)
+		executeHeadless(os.Args[1], contextConfig.TranspileFunction)
 		os.Exit(0)
 	}
 
@@ -61,7 +61,7 @@ func InitTranspiler(contextConfig *TranspilerContextConfig) {
 		logrus.WithError(err).Fatal("Failed to initialize sentry service")
 	}
 
-	prometheusNamespace := fmt.Sprintf("transpiler_%s_%s", contextConfig.sourceLanguage, contextConfig.targetLanguage)
+	prometheusNamespace := fmt.Sprintf("transpiler_%s_%s", contextConfig.SourceLanguage, contextConfig.TargetLanguage)
 	metricsService, err := metrics.NewMetricsService(prometheusNamespace)
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to initialize metrics service")
@@ -87,14 +87,14 @@ func InitTranspiler(contextConfig *TranspilerContextConfig) {
 		QueueService:    queueService,
 		MessagesService: messagesService,
 
-		sourceLanguageFileExtension: contextConfig.sourceLanguageFileExtension,
-		targetLanguageFileExtension: contextConfig.targetLanguageFileExtension,
+		sourceLanguageFileExtension: contextConfig.SourceLanguageFileExtension,
+		targetLanguageFileExtension: contextConfig.TargetLanguageFileExtension,
 
-		transpileFunction: contextConfig.transpileFunction,
+		transpileFunction: contextConfig.TranspileFunction,
 	}
 	defer transpilerContext.StopTranspiler()
 
-	queueTopic := fmt.Sprintf("transpilation_jobs_%s_to_%s", contextConfig.sourceLanguage, contextConfig.targetLanguage)
+	queueTopic := fmt.Sprintf("transpilation_jobs_%s_to_%s", contextConfig.SourceLanguage, contextConfig.TargetLanguage)
 	err = queueService.AddHandler(queueTopic, "transpiler", func(msg *nsq.Message) error {
 		logrus.Infoln("Received message")
 		return transpilerContext.onSubmission(msg)
