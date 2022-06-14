@@ -46,14 +46,14 @@ type TranspilerContextConfig struct {
 func InitTranspiler(contextConfig *TranspilerContextConfig) {
 	logrus.Infoln("Initializing transpiler...")
 
+	if len(os.Args) >= 2 {
+		executeHeadless(os.Args[1], contextConfig.TranspileFunction)
+		return
+	}
+
 	err := env.LoadEnv()
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to load environment variables")
-	}
-
-	if len(os.Args) >= 2 {
-		executeHeadless(os.Args[1], contextConfig.TranspileFunction)
-		os.Exit(0)
 	}
 
 	config := env.GetEnv()
