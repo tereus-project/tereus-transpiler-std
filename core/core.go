@@ -53,7 +53,7 @@ func InitTranspiler(contextConfig *TranspilerContextConfig) {
 
 	err := env.LoadEnv()
 	if err != nil {
-		logrus.WithError(err).Fatal("Failed to load environment variables")
+		logrus.WithError(err).Warn("Failed to load environment variables")
 	}
 
 	config := env.GetEnv()
