@@ -2,6 +2,7 @@ package messages
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/sirupsen/logrus"
 	"github.com/tereus-project/tereus-go-std/queue"
@@ -21,9 +22,10 @@ const (
 )
 
 type SubmissionStatusMessage struct {
-	ID     string           `json:"id"`
-	Status SubmissionStatus `json:"status"`
-	Reason string           `json:"reason"`
+	ID        string           `json:"id"`
+	Status    SubmissionStatus `json:"status"`
+	Reason    string           `json:"reason"`
+	Timestamp int64            `json:"timestamp"`
 }
 
 type MessagesService struct {
@@ -45,9 +47,10 @@ func (m *MessagesService) SendSubmissionStatus(submissionId string, status Submi
 	}
 
 	message, err := json.Marshal(SubmissionStatusMessage{
-		ID:     submissionId,
-		Status: status,
-		Reason: reason,
+		ID:        submissionId,
+		Status:    status,
+		Reason:    reason,
+		Timestamp: time.Now().UnixMilli(),
 	})
 	if err != nil {
 		logrus.Fatal(err)
