@@ -28,12 +28,14 @@ type Env struct {
 var env Env
 
 func LoadEnv() error {
-	err := godotenv.Load()
-	if err != nil {
-		return err
+	loadErr := godotenv.Load()
+	readErr := cleanenv.ReadEnv(&env)
+
+	if loadErr != nil {
+		return loadErr
 	}
 
-	return cleanenv.ReadEnv(&env)
+	return readErr
 }
 
 func GetEnv() *Env {
