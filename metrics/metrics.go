@@ -23,7 +23,7 @@ func NewMetricsService(sourceLanguage string, targetLangage string) (*MetricsSer
 	config := env.GetEnv()
 
 	transpilingDurationHistogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace: "tereus-transpiler",
+		Namespace: "tereus_transpiler",
 		Name:      "transpiling_duration_seconds",
 		Help:      "Histogram of transpiling duration",
 	}, []string{"status", "type"})
