@@ -15,16 +15,18 @@ import (
 type MetricsService struct {
 	transpilingDurationHistogram *prometheus.HistogramVec
 	server                       *http.Server
+	sourceLanguage               string
+	targetLanguage               string
 }
 
-func NewMetricsService(prometheusNamespace string) (*MetricsService, error) {
+func NewMetricsService(sourceLanguage string, targetLangage string) (*MetricsService, error) {
 	config := env.GetEnv()
 
 	transpilingDurationHistogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace: prometheusNamespace,
+		Namespace: "tereus-transpiler",
 		Name:      "transpiling_duration_seconds",
 		Help:      "Histogram of transpiling duration",
-	}, []string{"status"})
+	}, []string{"status", "type"})
 
 	err := prometheus.Register(transpilingDurationHistogram)
 	if err != nil {
@@ -57,5 +59,5 @@ func (m *MetricsService) Close() error {
 }
 
 func (m *MetricsService) ObserveTranspilingDuration(status messages.SubmissionStatus, startTime time.Time) {
-	m.transpilingDurationHistogram.WithLabelValues(string(status)).Observe(time.Since(startTime).Seconds())
+	m.transpilingDurationHistogram.With(prometheus.Labels{"status": string(status), "type": m.sourceLanguage + "-" + m.targetLanguage}).Observe(time.Since(startTime).Seconds())
 }

@@ -63,8 +63,7 @@ func InitTranspiler(contextConfig *TranspilerContextConfig) {
 		logrus.WithError(err).Fatal("Failed to initialize sentry service")
 	}
 
-	prometheusNamespace := fmt.Sprintf("transpiler_%s_%s", contextConfig.SourceLanguage, contextConfig.TargetLanguage)
-	metricsService, err := metrics.NewMetricsService(prometheusNamespace)
+	metricsService, err := metrics.NewMetricsService(contextConfig.SourceLanguage, contextConfig.TargetLanguage)
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to initialize metrics service")
 	}
