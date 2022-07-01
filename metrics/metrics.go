@@ -40,6 +40,8 @@ func NewMetricsService(sourceLanguage string, targetLangage string) (*MetricsSer
 		server: &http.Server{
 			Addr: fmt.Sprintf(":%s", config.MetricsPort),
 		},
+		sourceLanguage: sourceLanguage,
+		targetLanguage: targetLangage,
 	}, nil
 }
 
