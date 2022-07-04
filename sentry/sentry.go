@@ -19,6 +19,7 @@ func NewSentryService() (*SentryService, error) {
 		ShowFilename: true,
 		ReportCaller: true,
 		SentryDSN:    config.SentryDSN,
+		Env:          config.Env,
 	})
 	if err != nil {
 		return nil, err
