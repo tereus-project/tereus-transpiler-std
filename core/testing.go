@@ -25,7 +25,10 @@ func AssertTranspilation(t *testing.T, config *AssertTranspilationConfig) {
 		t.Error(err)
 	}
 
-	output, err := config.TranspileFunction(sourceFile)
+	output, err := config.TranspileFunction(&TranspileFunctionConfig{
+		LocalPathPrefix: dir,
+		LocalPath:       sourceFile,
+	})
 	if err != nil {
 		t.Error(err)
 	}

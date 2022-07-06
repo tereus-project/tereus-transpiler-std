@@ -35,14 +35,14 @@ type DownloadedObject struct {
 	LocalPath      string
 }
 
-func (s *StorageService) DownloadSourceObjects(submissionId string) ([]*DownloadedObject, error) {
+func (s *StorageService) DownloadSourceObjects(submissionId string) (string, []*DownloadedObject, error) {
 	var files []*DownloadedObject
 
 	config := env.GetEnv()
 
 	tempDirectory, err := os.MkdirTemp("", fmt.Sprintf("%s-", submissionId))
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create temp dir: %s", err)
+		return "", nil, fmt.Errorf("Failed to create temp dir: %s", err)
 	}
 
 	prefix := fmt.Sprintf("%s/%s/", config.SubmissionFolderPrefix, submissionId)
@@ -50,7 +50,7 @@ func (s *StorageService) DownloadSourceObjects(submissionId string) ([]*Download
 	for object := range s.s3Service.GetObjects(prefix) {
 		localPath, err := s.downloadSourceObject(object.Path, tempDirectory)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 
 		files = append(files, &DownloadedObject{
@@ -59,7 +59,7 @@ func (s *StorageService) DownloadSourceObjects(submissionId string) ([]*Download
 		})
 	}
 
-	return files, nil
+	return fmt.Sprintf("%s/%s", tempDirectory, prefix), files, nil
 }
 
 func (s *StorageService) downloadSourceObject(objectPath string, directory string) (string, error) {

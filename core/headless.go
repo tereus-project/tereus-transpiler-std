@@ -7,7 +7,10 @@ import (
 )
 
 func executeHeadless(filepath string, transpileFunction TranspileFunction) {
-	output, err := transpileFunction(filepath)
+	output, err := transpileFunction(&TranspileFunctionConfig{
+		LocalPathPrefix: "",
+		LocalPath:       filepath,
+	})
 	if err != nil {
 		logrus.WithError(err).Fatalf("Failed to transpile '%s'", filepath)
 	}

@@ -32,7 +32,12 @@ type TranspilerContext struct {
 	transpileFunction TranspileFunction
 }
 
-type TranspileFunction func(localPath string) (string, error)
+type TranspileFunctionConfig struct {
+	LocalPathPrefix string
+	LocalPath       string
+}
+
+type TranspileFunction func(config *TranspileFunctionConfig) (string, error)
 
 type TranspilerContextConfig struct {
 	SourceLanguage              string
@@ -164,7 +169,7 @@ func (t *TranspilerContext) onSubmission(m *nsq.Message) error {
 
 func (t *TranspilerContext) transpileSubmission(submissionId string) error {
 	logrus.Debugln("Downloading submission files...")
-	files, err := t.StorageService.DownloadSourceObjects(submissionId)
+	prefix, files, err := t.StorageService.DownloadSourceObjects(submissionId)
 	if err != nil {
 		return err
 	}
@@ -187,7 +192,10 @@ func (t *TranspilerContext) transpileSubmission(submissionId string) error {
 
 		logrus.Debugf("Remixing file '%s'", file.SourceFilePath)
 
-		output, err := t.transpileFunction(file.LocalPath)
+		output, err := t.transpileFunction(&TranspileFunctionConfig{
+			LocalPathPrefix: prefix,
+			LocalPath:       file.LocalPath,
+		})
 		if err != nil {
 			return err
 		}
