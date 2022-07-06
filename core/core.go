@@ -72,7 +72,12 @@ func InitTranspiler(contextConfig *TranspilerContextConfig) {
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to initialize metrics service")
 	}
-	go metricsService.Listen()
+	go func() {
+		err := metricsService.Listen()
+		if err != nil {
+			logrus.WithError(err).Fatal("An error occurred while listening to metrics")
+		}
+	}()
 
 	storageService, err := storage.NewStorageService()
 	if err != nil {
